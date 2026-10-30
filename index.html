@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nattskiftet</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./lib/three.module.js" } }</script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="vignette"></div>
+  <canvas id="static"></canvas>
+  <div id="flash"></div>
+  <div id="tablet"><div class="tablet-screen"></div></div>
+
+  <div id="camui" class="hidden">
+    <div class="scanlines"></div>
+    <div class="cam-border"></div>
+    <div class="rec"><span class="dot"></span> REC</div>
+    <div class="camname"><span id="camid">CAM 1A</span><span id="camlabel">Scenen</span></div>
+    <div id="map"></div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div class="clock"><div id="time">00:00</div><div id="nightlbl">Natt 1</div></div>
+    <div class="power">
+      <div>Ström kvar: <b id="power">100</b>%</div>
+      <div class="usage-row">Förbrukning: <span id="usage"></span></div>
+    </div>
+    <div id="hint" class="hidden">Musen åt sidorna = titta · Q/E dörrar · A/D lampor · MELLANSLAG kameror</div>
+  </div>
+  <div id="notice"></div>
+
+  <div id="camtoggle" class="hidden"><span>▲ ▲ ▲</span></div>
+
+  <div id="menu" class="screen">
+    <h1 class="title">NATTSKIFTET</h1>
+    <p class="sub">Fem nätter på Brunos Pizzaland</p>
+    <div class="buttons">
+      <button id="btn-new">Ny natt</button>
+      <button id="btn-continue" class="hidden">Fortsätt</button>
+    </div>
+    <p class="small">Bäst med hörlurar. Ett skräckspel i stil med Five Nights at Freddy's.</p>
+  </div>
+
+  <div id="intro" class="screen hidden">
+    <div id="intro-night" class="big-clock">00:00</div>
+    <div id="intro-msg" class="msg"></div>
+    <div class="buttons"><button id="btn-start">Börja skiftet</button></div>
+  </div>
+
+  <div id="gameover" class="screen hidden">
+    <h2 class="go">GAME OVER</h2>
+    <p id="go-text"></p>
+    <div class="buttons">
+      <button id="btn-retry">Försök igen</button>
+      <button id="btn-menu">Meny</button>
+    </div>
+  </div>
+
+  <div id="win" class="screen hidden">
+    <div id="win-clock" class="big-clock">05:59</div>
+    <p id="win-text"></p>
+    <div id="win-buttons" class="buttons hidden">
+      <button id="btn-next">Nästa natt</button>
+      <button id="btn-winmenu">Meny</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
