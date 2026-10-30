@@ -288,8 +288,50 @@ export function buildWorld(scene) {
     W.bulbMat = bulbMat;
   }
 
+  // interaktiv Bruno-affisch vid skrivbordet (tuta på näsan!)
+  {
+    const w = 0.95, h = w * 1.375;
+    const texNormal = TX.posterTexture('bruno');
+    const texGold = TX.posterTexture('golden');
+    const mat = new MSM({ map: texNormal, roughness: 0.9, side: THREE.DoubleSide });
+    const pivot = new THREE.Group();
+    pivot.position.set(-1.75, 1.85 + h / 2, -2.405);
+    scene.add(pivot);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+    mesh.position.y = -h / 2;
+    mesh.userData = { action: 'poster' };
+    pivot.add(mesh);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), new MSM({ color: 0xb01818, roughness: 0.3 }));
+    pin.position.set(0, -0.035, 0.012);
+    pivot.add(pin);
+    // näsan sitter där den är ritad på affischen (uv 0.5, 0.424)
+    const NOSE_V = 1 - (190 + 70 * 0.18) / 352;
+    const noseMat = new MSM({ color: 0x151010, roughness: 0.2, metalness: 0.1 });
+    const nose = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 14), noseMat);
+    nose.position.set(0, -h / 2 + (NOSE_V - 0.5) * h, 0.014);
+    const NS = [0.05, 0.034, 0.03];
+    nose.scale.set(...NS);
+    nose.userData = { action: 'nose' };
+    pivot.add(nose);
+    let amp = 0, st = 0, squash = 0;
+    W.updaters.push((dt) => {
+      st += dt;
+      pivot.rotation.z = amp * Math.exp(-st * 2.4) * Math.sin(st * 11);
+      squash = Math.max(0, squash - dt * 5);
+      nose.scale.set(NS[0] * (1 + 0.3 * squash), NS[1] * (1 + 0.15 * squash), NS[2] * (1 - 0.65 * squash));
+    });
+    W.poster = {
+      mesh, nose, noseV: NOSE_V,
+      swing(a = 0.12) { amp = a; st = 0; },
+      squash() { squash = 1; },
+      setGolden(on) {
+        mat.map = on ? texGold : texNormal;
+        mat.needsUpdate = true;
+        noseMat.color.setHex(on ? 0x2a1c04 : 0x151010);
+      },
+    };
+  }
   // affischer i kontoret
-  poster('bruno', -1.75, 1.85, -2.41, 0.95, 0);
   poster('rules', 1.8, 1.75, -2.41, 0.8, 0);
   poster('drawing', -0.75, 2.25, -2.41, 0.42, 0);
   poster('drawing', 0.15, 2.4, -2.41, 0.4, 0);
@@ -519,6 +561,7 @@ export function buildWorld(scene) {
     return obj;
   });
 
+  W.interactables = [...W.buttons, W.poster.mesh, W.poster.nose];
   W.update = (dt, t) => W.updaters.forEach((u) => u(dt, t));
   return W;
 }

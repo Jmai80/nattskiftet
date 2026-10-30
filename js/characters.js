@@ -31,12 +31,20 @@ function shared() {
 const sphere = new THREE.SphereGeometry(1, 20, 16);
 const sphereLo = new THREE.SphereGeometry(1, 12, 10);
 
-export function buildCharacter(type) {
+// opts.golden = guldvariant med tomma ögonhålor (Gyllene Bruno)
+export function buildCharacter(type, opts = {}) {
   const S = shared();
   const d = DEFS[type];
-  const fur = new MSM({ color: d.fur, roughness: 0.85 });
-  const belly = new MSM({ color: d.belly, roughness: 0.85 });
-  const eyeMat = new MSM({ color: 0x050505, emissive: d.eye, emissiveIntensity: 0.35, roughness: 0.2 });
+  const golden = !!opts.golden;
+  const fur = golden
+    ? new MSM({ color: 0xc9a227, roughness: 0.55, metalness: 0.35 })
+    : new MSM({ color: d.fur, roughness: 0.85 });
+  const belly = golden
+    ? new MSM({ color: 0xe8d38a, roughness: 0.6, metalness: 0.2 })
+    : new MSM({ color: d.belly, roughness: 0.85 });
+  const eyeMat = golden
+    ? new MSM({ color: 0x000000, emissive: 0xffffff, emissiveIntensity: 1.2, roughness: 0.2 })
+    : new MSM({ color: 0x050505, emissive: d.eye, emissiveIntensity: 0.35, roughness: 0.2 });
 
   const root = new THREE.Group();
   root.name = type;
@@ -50,15 +58,19 @@ export function buildCharacter(type) {
     return m;
   };
 
-  // ben
+  // ben – i en egen grupp med led i höften så att figuren kan sitta
+  const HIP = 0.95;
+  const legs = new THREE.Group();
+  legs.position.set(0, HIP, 0);
+  root.add(legs);
   for (const sx of [-1, 1]) {
-    add(root, new THREE.BoxGeometry(0.26, 0.13, 0.42), fur, 0.19 * sx, 0.065, 0.06);
-    add(root, new THREE.CylinderGeometry(0.045, 0.045, 0.16, 8), S.metal, 0.19 * sx, 0.2, 0);
+    add(legs, new THREE.BoxGeometry(0.26, 0.13, 0.42), fur, 0.19 * sx, 0.065 - HIP, 0.06);
+    add(legs, new THREE.CylinderGeometry(0.045, 0.045, 0.16, 8), S.metal, 0.19 * sx, 0.2 - HIP, 0);
     if (type === 'fox') {
-      add(root, new THREE.CylinderGeometry(0.05, 0.05, 0.78, 8), S.metal, 0.19 * sx, 0.62, 0);
-      add(root, sphereLo, S.metal, 0.19 * sx, 0.6, 0.02, 0.07, 0.07, 0.07);
+      add(legs, new THREE.CylinderGeometry(0.05, 0.05, 0.78, 8), S.metal, 0.19 * sx, 0.62 - HIP, 0);
+      add(legs, sphereLo, S.metal, 0.19 * sx, 0.6 - HIP, 0.02, 0.07, 0.07, 0.07);
     } else {
-      add(root, new THREE.CylinderGeometry(0.12, 0.14, 0.72, 12), fur, 0.19 * sx, 0.62, 0);
+      add(legs, new THREE.CylinderGeometry(0.12, 0.14, 0.72, 12), fur, 0.19 * sx, 0.62 - HIP, 0);
     }
   }
   add(root, sphere, fur, 0, 1.0, 0, 0.34, 0.22, 0.27);
@@ -142,8 +154,9 @@ export function buildCharacter(type) {
   // ögon
   const pupils = [];
   for (const sx of [-1, 1]) {
-    add(head, sphere, S.white, 0.12 * sx, 0.07, 0.27, 0.075, 0.08, 0.06);
-    pupils.push(add(head, sphereLo, eyeMat, 0.12 * sx, 0.065, 0.33, 0.03, 0.03, 0.02));
+    add(head, sphere, golden ? S.dark : S.white, 0.12 * sx, 0.07, 0.27, 0.075, 0.08, 0.06);
+    const ps = golden ? 0.014 : 0.03;
+    pupils.push(add(head, sphereLo, eyeMat, 0.12 * sx, 0.065, 0.33, ps, ps, golden ? 0.01 : 0.02));
     const brow = add(head, new THREE.BoxGeometry(0.13, 0.025, 0.03), S.dark, 0.12 * sx, 0.17, 0.29);
     brow.rotation.z = 0.25 * sx;
   }
@@ -177,7 +190,7 @@ export function buildCharacter(type) {
     strap.rotation.y = 0.35;
   }
 
-  return { type, name: d.name, root, head, jaw, arms, pupils, eyeMat };
+  return { type, name: golden ? 'Gyllene Bruno' : d.name, root, head, jaw, arms, legs, pupils, eyeMat };
 }
 
 function addBowTie(root, mat) {

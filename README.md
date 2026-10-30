@@ -8,14 +8,28 @@ Du är nattvakt på **Brunos Pizzaland**. Sitt kvar i vaktkontoret och överlev 
 
 ## Styrning
 
-| Vad | Hur |
-|---|---|
-| Titta åt sidorna | För musen mot vänster/höger kant |
-| Dörrar | Klicka på röda knappen vid dörren, eller **Q** (vänster) / **E** (höger) |
-| Dörrlampor | Klicka på vita knappen, eller **A** (vänster) / **D** (höger) |
-| Kameror | **Mellanslag**, eller för musen över listen längst ner |
-| Byt kamera | Klicka på kartan, **1–8** eller piltangenterna |
-| Ljud av/på | **M** |
+| Vad | Dator | Mobil |
+|---|---|---|
+| Titta åt sidorna | För musen mot vänster/höger kant | Dra med fingret |
+| Dörrar | Röda knappen vid dörren, eller **Q** / **E** | **DÖRR**-knapparna på skärmens sidor |
+| Dörrlampor | Vita knappen, eller **A** / **D** | **LJUS**-knapparna |
+| Kameror | **Mellanslag**, eller för musen över listen längst ner | Tryck på listen längst ner |
+| Byt kamera | Klicka på kartan, **1–8** eller piltangenterna | Tryck på kartan |
+| Helskärm | **F** eller ⛶-knappen | ⛶-knappen (startar automatiskt) |
+| Paus | **P** / **Esc** | ❚❚-knappen |
+| Ljud av/på | **M** | – |
+
+### Mobil
+
+- Spelet går automatiskt i helskärm och låser liggande läge när du startar ett skift (Android/Chrome).
+- **iPhone:** Safari tillåter inte helskärm för webbsidor. Tryck på **Dela → Lägg till på hemskärmen** och starta spelet från ikonen – då körs det i helskärm som en app.
+- Håller du telefonen stående pausas spelet tills du vrider tillbaka den.
+- Upplösningen sänks automatiskt om spelet går segt.
+
+## Hemligheter
+
+- Bruno-affischen bakom skrivbordet har en näsa. Den går att tuta på. Tuta inte för mycket...
+- Ibland blir affischen guld. Då är **Gyllene Bruno** på väg. Han sätter sig i ett hörn av kontoret – men han gör dig inget. Fäll upp kameran, eller klicka på honom, så försvinner han.
 
 ## Regler
 

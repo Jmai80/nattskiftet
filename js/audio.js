@@ -48,6 +48,9 @@ export class Sfx {
   get ok() { return !!this.ctx; }
   get now() { return this.ctx.currentTime; }
 
+  suspend() { if (this.ctx && this.ctx.state === 'running') this.ctx.suspend(); }
+  resume() { if (this.ctx && this.ctx.state !== 'running') this.ctx.resume(); }
+
   toggleMute() {
     this.muted = !this.muted;
     if (this.master) this.master.gain.value = this.muted ? 0 : 0.9;
@@ -360,6 +363,82 @@ export class Sfx {
     for (let i = 0; i < 30; i++) g.gain.setValueAtTime(0.04 + Math.random() * 0.08, t + 2.6 + i * 0.1);
     g.gain.linearRampToValueAtTime(0, t + 6);
     this.noise(g, t + 2.6, 3.5, { type: 'bandpass', f: 1400, q: 0.6 });
+  }
+
+  // Tutande clownnäsa ("tut-tut" som en gammal ballongtuta)
+  honk(pitch = 1) {
+    if (!this.ok) return;
+    const ctx = this.ctx, t = this.now, d = this.pan(-0.3);
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1300 * pitch; bp.Q.value = 1.6;
+    const g = this.env(d, t, 0.008, 0.45, 0.12, 0.09);
+    bp.connect(g);
+    [1, 1.5, 2.02].forEach((m, i) => {
+      const o = this.osc(i ? 'square' : 'sawtooth', 330 * pitch * m, bp, t, 0.3);
+      o.frequency.setValueAtTime(330 * pitch * m * 1.06, t);
+      o.frequency.exponentialRampToValueAtTime(330 * pitch * m * 0.94, t + 0.2);
+      const v = ctx.createOscillator(); v.frequency.value = 28;
+      const vg = ctx.createGain(); vg.gain.value = 9 * m;
+      v.connect(vg); vg.connect(o.frequency); v.start(t); v.stop(t + 0.3);
+    });
+  }
+
+  rustle() {
+    if (!this.ok) return;
+    const t = this.now, d = this.pan(-0.3);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0, t);
+    for (let i = 0; i < 8; i++) g.gain.setValueAtTime(0.02 + Math.random() * 0.08, t + i * 0.035);
+    g.gain.linearRampToValueAtTime(0, t + 0.35);
+    g.connect(d);
+    this.noise(g, t, 0.4, { type: 'highpass', f: 2200, q: 0.5 });
+  }
+
+  // Gyllene Bruno: lågt brummande, viskningar och ett förvrängt skratt
+  goldAppear() {
+    if (!this.ok || this.loops.gold) return;
+    const ctx = this.ctx, t = this.now;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(1, t + 0.4);
+    g.connect(this.master);
+    const sh = ctx.createWaveShaper(); sh.curve = this.curve;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 600;
+    const dg = ctx.createGain(); dg.gain.value = 0.09;
+    sh.connect(lp); lp.connect(dg); dg.connect(g);
+    const o1 = ctx.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 46;
+    const o2 = ctx.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 46.7;
+    o1.connect(sh); o2.connect(sh);
+    // viskande brus som pulserar
+    const wn = ctx.createBufferSource(); wn.buffer = this.white; wn.loop = true;
+    const wb = ctx.createBiquadFilter(); wb.type = 'bandpass'; wb.frequency.value = 3200; wb.Q.value = 2;
+    const wg = ctx.createGain(); wg.gain.value = 0.02;
+    const wl = ctx.createOscillator(); wl.frequency.value = 2.3;
+    const wlg = ctx.createGain(); wlg.gain.value = 0.018;
+    wl.connect(wlg); wlg.connect(wg.gain);
+    wn.connect(wb); wb.connect(wg); wg.connect(g);
+    [o1, o2, wn, wl].forEach((n) => n.start(t));
+    this.loops.gold = { g, nodes: [o1, o2, wn, wl] };
+    // "ha ... ha ... ha" – formantfiltrerade pulser med sjunkande ton
+    const d = this.pan(0);
+    for (let i = 0; i < 4; i++) {
+      const at = t + 0.6 + i * 0.32;
+      const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 720; f1.Q.value = 6;
+      const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 1150; f2.Q.value = 6;
+      const pg = this.env(d, at, 0.02, 0.5, 0.18, 0.06);
+      f1.connect(pg); f2.connect(pg);
+      const o = this.osc('sawtooth', 105 - i * 9, f1, at, 0.35);
+      o.connect(f2);
+      o.frequency.linearRampToValueAtTime(80 - i * 9, at + 0.25);
+    }
+  }
+
+  goldVanish() {
+    if (!this.ok) return;
+    this.stopLoop('gold', 0.08);
+    const t = this.now, d = this.pan(0);
+    const g = this.env(d, t, 0.005, 0.3, 0.35);
+    const { fl } = this.noise(g, t, 0.4, { type: 'bandpass', f: 4000, q: 0.7 });
+    fl.frequency.exponentialRampToValueAtTime(300, t + 0.35);
   }
 
   distant() {

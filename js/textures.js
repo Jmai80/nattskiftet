@@ -187,20 +187,22 @@ export function textTexture(text, { w = 512, h = 128, bg = '#000', fg = '#fff', 
 }
 
 function bearFace(g, cx, cy, r, eyes = 'normal') {
-  g.fillStyle = '#6b4423';
+  const gold = eyes === 'hollow';
+  g.fillStyle = gold ? '#c9a227' : '#6b4423';
   g.beginPath(); g.arc(cx - r * 0.75, cy - r * 0.75, r * 0.32, 0, 7); g.fill();
   g.beginPath(); g.arc(cx + r * 0.75, cy - r * 0.75, r * 0.32, 0, 7); g.fill();
   g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
-  g.fillStyle = '#c49a63';
+  g.fillStyle = gold ? '#e8d38a' : '#c49a63';
   g.beginPath(); g.ellipse(cx, cy + r * 0.35, r * 0.5, r * 0.35, 0, 0, 7); g.fill();
   g.fillStyle = '#111';
   g.beginPath(); g.ellipse(cx, cy + r * 0.18, r * 0.16, r * 0.1, 0, 0, 7); g.fill();
-  g.fillStyle = '#fff';
+  g.fillStyle = gold ? '#050505' : '#fff';
   g.beginPath(); g.arc(cx - r * 0.35, cy - r * 0.2, r * 0.2, 0, 7); g.fill();
   g.beginPath(); g.arc(cx + r * 0.35, cy - r * 0.2, r * 0.2, 0, 7); g.fill();
-  g.fillStyle = eyes === 'red' ? '#d01010' : '#123';
-  g.beginPath(); g.arc(cx - r * 0.35, cy - r * 0.18, r * 0.08, 0, 7); g.fill();
-  g.beginPath(); g.arc(cx + r * 0.35, cy - r * 0.18, r * 0.08, 0, 7); g.fill();
+  g.fillStyle = eyes === 'red' ? '#d01010' : gold ? '#fff' : '#123';
+  const pr = gold ? r * 0.03 : r * 0.08;
+  g.beginPath(); g.arc(cx - r * 0.35, cy - r * 0.18, pr, 0, 7); g.fill();
+  g.beginPath(); g.arc(cx + r * 0.35, cy - r * 0.18, pr, 0, 7); g.fill();
   g.strokeStyle = '#111'; g.lineWidth = r * 0.06;
   g.beginPath(); g.arc(cx, cy + r * 0.32, r * 0.25, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
   // hatt
@@ -220,6 +222,18 @@ export function posterTexture(kind) {
     bearFace(g, W / 2, 190, 70);
     g.font = 'bold 50px Arial Black, Impact, sans-serif';
     g.fillText('BRUNO!', W / 2, 322);
+  } else if (kind === 'golden') {
+    // samma layout som 'bruno' (näsan på samma ställe) men guld och fel
+    const grad = g.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#3a2a08'); grad.addColorStop(1, '#120c02');
+    g.fillStyle = grad; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#d8b84a'; g.font = 'bold 36px Arial Black, Impact, sans-serif'; g.textAlign = 'center';
+    g.fillText('LEK MED', W / 2, 48);
+    bearFace(g, W / 2, 190, 70, 'hollow');
+    g.fillStyle = '#9a1010';
+    g.font = 'bold 50px Arial Black, Impact, sans-serif';
+    g.fillText('MIG', W / 2, 322);
+    for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(0,0,0,${Math.random() * 0.5})`; g.fillRect(0, Math.random() * H, W, rand(1, 4)); }
   } else if (kind === 'rules') {
     g.fillStyle = '#e7e0cc'; g.fillRect(0, 0, W, H);
     g.fillStyle = '#222'; g.font = 'bold 22px Courier New, monospace'; g.textAlign = 'left';

@@ -2,8 +2,16 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Nattskiftet</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nattskiftet">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
   <script type="importmap">{ "imports": { "three": "./lib/three.module.js" } }</script>
 </head>
@@ -11,6 +19,7 @@
   <canvas id="c"></canvas>
   <div id="vignette"></div>
   <canvas id="static"></canvas>
+  <div id="goldfx" class="hidden"><div id="goldtext">LEK MED MIG</div></div>
   <div id="flash"></div>
   <div id="tablet"><div class="tablet-screen"></div></div>
 
@@ -32,6 +41,22 @@
   </div>
   <div id="notice"></div>
 
+  <div id="topbtns" class="hidden">
+    <button class="iconbtn btn-fs" title="Helskärm (F)">⛶</button>
+    <button class="iconbtn" id="btn-pause" title="Paus (P)">❚❚</button>
+  </div>
+
+  <div id="touchctl" class="hidden">
+    <div class="tside left">
+      <button data-act="door" data-side="left" class="tdoor">DÖRR</button>
+      <button data-act="light" data-side="left" class="tlight">LJUS</button>
+    </div>
+    <div class="tside right">
+      <button data-act="door" data-side="right" class="tdoor">DÖRR</button>
+      <button data-act="light" data-side="right" class="tlight">LJUS</button>
+    </div>
+  </div>
+
   <div id="camtoggle" class="hidden"><span>▲ ▲ ▲</span></div>
 
   <div id="menu" class="screen">
@@ -40,7 +65,9 @@
     <div class="buttons">
       <button id="btn-new">Ny natt</button>
       <button id="btn-continue" class="hidden">Fortsätt</button>
+      <button class="btn-fs" data-label="1">Helskärm</button>
     </div>
+    <p id="ios-tip" class="small tip hidden">iPhone: tryck på <b>Dela</b> → <b>Lägg till på hemskärmen</b> och starta spelet därifrån för riktig helskärm.</p>
     <p class="small">Bäst med hörlurar. Ett skräckspel i stil med Five Nights at Freddy's.</p>
   </div>
 
@@ -48,6 +75,15 @@
     <div id="intro-night" class="big-clock">00:00</div>
     <div id="intro-msg" class="msg"></div>
     <div class="buttons"><button id="btn-start">Börja skiftet</button></div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <h2 class="pause-title">PAUSAD</h2>
+    <div class="buttons">
+      <button id="btn-resume">Fortsätt</button>
+      <button class="btn-fs" data-label="1">Helskärm</button>
+      <button id="btn-pausemenu">Avsluta till meny</button>
+    </div>
   </div>
 
   <div id="gameover" class="screen hidden">
@@ -66,6 +102,21 @@
       <button id="btn-next">Nästa natt</button>
       <button id="btn-winmenu">Meny</button>
     </div>
+  </div>
+
+  <div id="ioshelp" class="screen hidden">
+    <h2 class="pause-title">Helskärm på iPhone</h2>
+    <div class="msg">Safari på iPhone tillåter inte att webbsidor går in i helskärm.<br><br>
+      Gör så här i stället:<br>
+      1. Tryck på <b>Dela</b>-ikonen (fyrkanten med en pil uppåt).<br>
+      2. Välj <b>Lägg till på hemskärmen</b>.<br>
+      3. Starta Nattskiftet från ikonen på hemskärmen – då körs spelet i helskärm.</div>
+    <div class="buttons"><button id="btn-ioshelp-ok">OK</button></div>
+  </div>
+
+  <div id="rotate">
+    <div class="phone"></div>
+    <p>Vrid telefonen till liggande läge</p>
   </div>
 
   <script type="module" src="js/main.js"></script>
